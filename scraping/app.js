@@ -1,3 +1,15 @@
+/*
+ * app.js - サーバを開始する
+*/
+
+/*jslint          node    : true, continue  : true,
+  devel   : true, indent  : 2,    maxerr    : 50,
+  newcap  : true, nomen   : true, plusplus  : true,
+  regexp  : true, sloppy  : true, vars      : false,
+  white   : true
+*/
+/*global */
+
 var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
@@ -6,9 +18,10 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var scraping = require('./libs/scraping');
+var remote_site = require('./libs/remote_site');
 
-console.log( scraping );
+remote_site.config();
+remote_site.getPage();
 
 var app = express();
 
