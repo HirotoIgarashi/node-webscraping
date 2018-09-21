@@ -18,10 +18,41 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-var remote_site = require('./libs/remote_site');
+// var remote_site = require('./libs/remote_site');
+// var get_node_document = require('./libs/getNodeDocument');
+var puppet = require('./libs/puppet');
 
-remote_site.config();
-remote_site.getPage();
+// remote_site.config();
+
+// remote_site.download(
+//   'http://www.aozora.gr.jp/index_pages/person81.html',
+//   'miyazawakenji.html',
+//   function () {
+//     console.log( 'ok, kenji.' );
+//   }
+// );
+
+// remote_site.download(
+//   'http://www.aozora.gr.jp/index_pages/person148.html',
+//   'natumesoseki.html',
+//   function () {
+//     console.log( 'ok, soseki.' );
+//   }
+// );
+
+// remote_site.getPage();
+
+//remote_site.showLink();
+
+// remote_site.getImage();
+
+// get_node_document.initModule();
+
+// puppeteerを使用してサイトにアクセスする
+puppet.initModule();
+puppet.config({headless : false});
+puppet.launch();
+// puppet.close();
 
 var app = express();
 
