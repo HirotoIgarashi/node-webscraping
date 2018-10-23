@@ -2,17 +2,9 @@
  * template.js - Node.jsのモジュールのテンプレート
 */
 
-/*jslint          node    : true, continue  : true,
-  devel   : true, indent  : 2,    maxerr    : 50,
-  newcap  : true, nomen   : true, plusplus  : true,
-  regexp  : true, sloppy  : true, vars      : false,
-  white   : true
-*/
-/*global */
-
 // ---------- プライベートプロパティ開始 ----------
 'use strict';
-var
+let
   config,
   initModule;
 // ---------- プライベートプロパティ終了 ----------
@@ -22,15 +14,26 @@ var
 // ---------- プライベートメソッド終了 ------------
 
 // ---------- パブリックメソッド開始 --------------
+// 目的     :
+// 引数     :
+//  * 引数1 - 引数1の説明
+// 設定     :
+// 動作     :
+// 戻り値   :
+// 例外発行 :
+// 使用例   :
+//
 config = function () {
-  var
+  let
     template;
+  const
+    max = 100;
 };
 
 initModule = function () {
   // リンクを解析してダウンロード for Node.js
   // --- モジュールの取り込み ---
-  var
+  let
     template;
 
   console.log("** template initModule start **");

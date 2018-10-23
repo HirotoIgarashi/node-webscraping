@@ -59,7 +59,7 @@ downloadContents = function (url, savePath) {
 
 // ---------- パブリックメソッド開始 --------------
 config = function () {
-  console.log("** remote_site config start **");
+  console.log('** remote_site config start **');
 };
 
 download = function (url, savepath, callback) {
@@ -159,18 +159,18 @@ getImage = function () {
         src = $(this).attr('src'),
         fnameArray;
 
-        // 相対パスを絶対パスに変換
-        src = getURL(url, src);
+      // 相対パスを絶対パスに変換
+      src = getURL(url, src);
 
-        // 保存用のファイル名を作成
-        fname = URL.parse(src).pathname;
+      // 保存用のファイル名を作成
+      fname = URL.parse(src).pathname;
 
-        fnameArray = fname.split("/");
+      fnameArray = fname.split('/');
 
-        fname = savedir + '/' + fnameArray[fnameArray.length -1].replace(/[^a-zA-Z0-9\.]+/g, '_');
+      fname = savedir + '/' + fnameArray[fnameArray.length -1].replace(/[^a-zA-Z0-9.]+/g, '_');
 
-        // ダウンロード
-        downloadContents(src, fname);
+      // ダウンロード
+      downloadContents(src, fname);
     });
   });
 };
@@ -185,5 +185,5 @@ module.exports = {
 // ---------- パブリックメソッド終了 --------------
 
 // ---------- モジュール初期化開始   --------------
-console.log("** remote_site start **");
+console.log('** remote_site start **');
 // ---------- モジュール初期化終了   --------------
