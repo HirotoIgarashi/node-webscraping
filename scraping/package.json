@@ -3,18 +3,39 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "npm run lint && npm run mocha",
+    "lint": "eslint *.js libs/*.js",
+    "_comment": "istanbulコマンドでmochaも実行している",
+    "cover": "NODE_ENV=test nyc ava -v",
+    "ava": "NODE_ENV=test ava -v",
+    "mocha": "NODE_ENV=test mocha --timeout=86400000"
   },
   "dependencies": {
+    "acorn": "^6.1.1",
+    "async": "^2.6.2",
     "cheerio-httpcli": "^0.7.3",
-    "cookie-parser": "~1.4.3",
-    "debug": "~4.0.1",
-    "express": "~4.16.0",
-    "fs-extra": "^7.0.0",
-    "http-errors": "~1.7.1",
-    "jade": "~1.11.0",
+    "cookie-parser": "^1.4.4",
+    "debug": "~4.1.1",
+    "delay": "^4.1.0",
+    "express": "^4.16.4",
+    "fs-extra": "^7.0.1",
+    "http-errors": "^1.7.2",
+    "jade": "^1.11.0",
     "morgan": "^1.9.1",
-    "puppeteer": "^1.8.0",
-    "request": "^2.88.0"
+    "pug": "^2.0.3",
+    "puppeteer": "^1.12.2",
+    "request": "^2.88.0",
+    "uglify-js": "^3.4.9"
+  },
+  "devDependencies": {
+    "ava": "^1.2.1",
+    "eslint": "^5.14.1",
+    "eslint-config-airbnb-base": "^13.1.0",
+    "eslint-plugin-babel": "^5.3.0",
+    "eslint-plugin-import": "^2.16.0",
+    "istanbul": "^1.1.0-alpha.1",
+    "mocha": "^5.2.0",
+    "nyc": "^13.3.0"
   }
 }

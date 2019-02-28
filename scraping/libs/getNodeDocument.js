@@ -14,7 +14,7 @@
 // ---------- プライベートプロパティ開始 ----------
 'use strict';
 var
-  remote_site = require('./remote_site'),
+  // remote_site = require('./remote_site'),
   initModule;
 // ---------- プライベートプロパティ終了 ----------
 
@@ -41,7 +41,7 @@ initModule = function () {
     TARGET_URL  = 'https://nodejs.org/api/',
     list        = {};
 
-  console.log("** getNodeDocument initModule start **");
+  console.log('** getNodeDocument initModule start **');
 
   // 指定のurlを最大レベルlevelまでダウンロード
   downloadRec = function (url, level) {
@@ -99,7 +99,7 @@ initModule = function () {
 
         // '#'以降を無視する(a.html#aaとa.html#bbは同じもの)
         // 末尾の#を消す
-        href = href.replace(/\#.+$/, '');
+        href = href.replace(/#.+$/, '');
         downloadRec(href, level + 1);
       });
       // ページを保存(ファイル名を決定する)

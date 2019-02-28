@@ -24,19 +24,19 @@ let
 // 使用例   :
 //
 config = function () {
-  let
-    template;
-  const
-    max = 100;
+  // let
+  //   template;
+  // const
+  //   max = 100;
 };
 
 initModule = function () {
   // リンクを解析してダウンロード for Node.js
   // --- モジュールの取り込み ---
-  let
-    template;
+  // let
+  //   template;
 
-  console.log("** template initModule start **");
+  console.log('** template initModule start **');
 
 };
 
@@ -47,5 +47,5 @@ module.exports = {
 // ---------- パブリックメソッド終了 --------------
 
 // ---------- モジュール初期化開始   --------------
-console.log("** template start **");
+console.log('** template start **');
 // ---------- モジュール初期化終了   --------------

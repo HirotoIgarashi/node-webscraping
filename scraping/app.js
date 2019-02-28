@@ -18,143 +18,66 @@ var logger        = require('morgan');
 var indexRouter   = require('./routes/index');
 var usersRouter   = require('./routes/users');
 
+let browser;
+let page;
+
 const puppet        = require('./libs/puppet');
 const filesystem    = require('./libs/filesystem');
 
-filesystem.config();
+filesystem.config({pathname: 'download'});
 filesystem.initModule();
 
-filesystem.saveFile('download/sample.txt', 'テキストファイルです');
-filesystem.appendFile('download/sample.txt', '追記したテキストファイルです');
+// filesystem.saveFile('sample.txt', 'テキストファイルです');
+// filesystem.appendFile('sample.txt', '追記したテキストファイルです');
 
 // puppetの初期化モジュール
-// 現在はconsole.logを呼んでいるだけ
+// 現在はconsole.logを実行しているだけ
 puppet.initModule();
 
 // headlessをfalseにしてブラウザを起動するように設定する
 // slowMoを50に設定して指定のミリ秒スローモーションで実行する
+// ブラウザを最大にするためにwidthに0、heightに0を指定する。こうすると解像度に
+// よって最大になる。
 puppet.setLaunchOptions({
-  headless  : false,
-  slowMo    : 50
+  headless        : false,
+  slowMo          : 50,
+  defaultViewport : {
+    width   : 0,
+    height  : 0
+  }
 });
 
+// puppet.setSiteOptions({url : 'https://amazon.co.jp'});
+puppet.setSiteOptions(
+  {url : 'https://www.amazon.co.jp/gp/site-directory/ref=nav__fullstore'}
+);
+
 (async () => {
-  let
-    page_content,
-    page_contents,
-    page_links,
-    internalLinks,
-    imageFiles,
-    imageFile;
 
-  // ブラウザの起動
-  await puppet.launch();
-  // puppeteerを使用してサイトにアクセスする
-  await puppet.setSiteOptions({
-    url: 'http://www.aozora.gr.jp/index_pages/person81.html'
-  });
+  // ブラウザを立ち上げる
+  browser = await puppet.openBrowser();
 
-  // 青空文庫の宮沢賢治を開く
-  await puppet.openPage();
-  // ページを取得する
-  page_content = await puppet.fetchSourceCode();
-  // ページを保存する
-  filesystem.saveFile('download/miyazawakenji.html', page_content);
-  // ページを閉じる
-  await puppet.closePage();
+  // ページをオープンする
+  page = await puppet.openPage(browser);
+  // TOPページに移動する
+  page = await puppet.gotoPage(page, 'https://amazon.co.jp');
 
-  // 青空文庫の夏目漱石を開く
-  await puppet.setSiteOptions({
-    url: 'http://www.aozora.gr.jp/index_pages/person148.html'
-  });
-  await puppet.openPage();
-  // 内部リンクを取得する
-  internalLinks = await puppet.fetchInternalLinks();
+  // カテゴリのリンクを取得する
+  let category_link = await puppet.fetchInternalLinks(page);
 
-  console.log(internalLinks);
+  await console.log(category_link);
 
-  // ページを取得する
-  page_content = await puppet.fetchSourceCode();
-  // ページを保存する
-  filesystem.saveFile('download/natumesoseki.html', page_content);
-  // ページを閉じる
-  await puppet.closePage();
+  // 対象となるカテゴリを選択する
 
-  // urlを指定する
-  await puppet.setSiteOptions({
-    url: 'https://example.com'
-  });
-  // 起動を待ってからexample.comを開く
-  await puppet.openPage();
+  // カテゴリページの最初のページに移動する
 
-  // ページを取得する
-  page_content = await puppet.fetchSourceCode();
+  // 次のページを表示する
 
-  // ページを保存する
-  filesystem.saveFile('download/example.html', page_content);
-
-  // 開くのを待ってからページを評価する
-  await puppet.evaluate();
-  // ページを閉じる
-  await puppet.closePage();
-
-  // urlを指定する
-  await puppet.setSiteOptions({
-    url: 'https://google.com'
-  });
-  // 開くのを待ってからgoogle.comを開く
-  await puppet.openPage();
-
-  // ページを取得する
-  page_content = await puppet.fetchSourceCode();
-
-  // リンクを取得する
-  page_links = await puppet.fetchLinks();
-
-  console.log(page_links);
-
-  filesystem.saveFile('download/google.html', page_content);
-
-  // 開くのを待ってからページを評価する
-  await puppet.evaluate();
-  // ページを閉じる
-  await puppet.closePage();
-
-  // urlを指定する
-  await puppet.setSiteOptions({
-    url: 'http://ja.wikipedia.org/wiki/ネコ'
-  });
-  // ページを開く
-  await puppet.openPage();
-
-  // 画像のリストを取得する
-  imageFiles = await puppet.fetchImageFile('img.thumbimage');
-
-  for (imageFile of imageFiles ) {
-    filesystem.saveFile('download/' + imageFile.name, imageFile.buffer);
-  }
-
-  // ページを閉じる
-  await puppet.closePage();
-
-  // urlを指定する
-  await puppet.setSiteOptions({
-    url: 'https://nodejs.org/api/'
-  });
-  // ページを開く
-  await puppet.openPage();
-
-  // 3階層先までのソースコードを取得する
-  page_contents = await puppet.fetchSourceCodes(3);
-
-  // console.log(page_contents);
-
-  // ページを閉じる
-  await puppet.closePage();
+  // 最後のページまで表示する
 
   // 評価が終わってから10秒待ってブラウザをクローズする
-  // await setTimeout(function() {
-  //   puppet.close();
+  // await setTimeout(async function() {
+  //   await puppet.closeBrowser();
   // }, 10000);
 
 })();

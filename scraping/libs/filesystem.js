@@ -4,11 +4,12 @@
 
 // ---------- プライベートプロパティ開始 ----------
 'use strict';
-var
+let
   config,
   initModule,
   saveFile,
-  appendFile;
+  appendFile,
+  pathname;
 
 const
   path  = require('path'),
@@ -24,9 +25,11 @@ const
 // ---------- パブリックメソッド開始 --------------
 
 // パブリックメソッド/config/開始 -----------------------------
-config = function () {
+config = function (option) {
 
   console.log('** filesystem config start **');
+
+  pathname = option.pathname;
 
 };
 // パブリックメソッド/config/終了 -----------------------------
@@ -55,7 +58,7 @@ saveFile = async function(filepath, content) {
   // ファイルに保存する
   try {
     await fs.outputFile(
-      path.join(__dirname, '..', filepath),
+      path.join(__dirname, '..', pathname, filepath),
       content
     );
   }
