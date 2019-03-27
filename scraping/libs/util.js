@@ -40,9 +40,112 @@ const get_timestamp_time = function() {
     ':' + pad(time.getUTCSeconds());
 };
 // プライベートメソッド/get_timestamp_time/終了 --------------------------------
+
+// プライベートメソッド/isIndexed/開始 -----------------------------------------
+const isIndexed = function(data) {
+  return _.isArray(data) || _.isString(data);
+};
+// プライベートメソッド/isIndexed/開始 -----------------------------------------
+
+// プライベートメソッド/fail/開始 ----------------------------------------------
+const fail = function(thing) {
+  // throw new Error(thing);
+  console.log(['失敗:', thing].join(''));
+};
+// プライベートメソッド/fail/終了 ----------------------------------------------
+
+// プライベートメソッド/divide/開始 --------------------------------------------
+const divide = (a, b) => a / b;
+// プライベートメソッド/divide/終了 --------------------------------------------
+
+// プライベートメソッド/size/開始 ----------------------------------------------
+const size = arr => arr.length;
+// プライベートメソッド/size/終了 ----------------------------------------------
+
+// プライベートメソッド/total/開始 ---------------------------------------------
+const total = arr => arr.reduce(sum);
+// プライベートメソッド/total/終了 ---------------------------------------------
+
+// プライベートメソッド/sum/開始 -----------------------------------------------
+const sum = (total, current) => total + current;
+// プライベートメソッド/sum/終了 -----------------------------------------------
+
 // ---------- プライベートメソッド終了 -----------------------------------------
 
 // ---------- パブリックメソッド開始 -------------------------------------------
+
+// パブリックメソッド/trim/開始 ------------------------------------------------
+/**
+ * trim :: String -> String
+ * 前後のスペースをカット
+ *
+ * @param {String}
+ * @returns {String}
+ */
+const trim = (str) => str.replace(/^\s+|\s+$/g, '');
+// パブリックメソッド/trim/終了 ------------------------------------------------
+
+// パブリックメソッド/normalize/開始 -------------------------------------------
+/**
+ * normalize :: String -> String
+ * 入力文字列からダッシュ記号を除去
+ *
+ * @returns {String}
+ */
+const normalize = (str) => str.replace(/-/g, '');
+// パブリックメソッド/normalize/終了 -------------------------------------------
+
+// パブリックメソッド/average/開始 ---------------------------------------------
+const average = arr => divide(total(arr), size(arr));
+// パブリックメソッド/average/終了----------------------------------------------
+
+// パブリックメソッド/run/開始 -------------------------------------------------
+const run = (...functions) => x => {
+  functions.reverse().forEach(func => x = func(x));
+  return x;
+};
+// パブリックメソッド/run/終了 -------------------------------------------------
+
+// パブリックメソッド/increment/開始 -------------------------------------------
+/**
+ * increment 与えられた引数に1を加える
+ *
+ * @returns {Number}
+ */
+const increment = counter => counter + 1;
+// パブリックメソッド/increment/終了 -------------------------------------------
+
+// パブリックメソッド/nth/開始 -------------------------------------------------
+/**
+ * nth インデックス指定可能なデータ型をもったデータから、有効なインデックスで
+ * 指定される要素を返す
+ *
+ * @param a インデックス指定可能なデータ
+ * @param index インデックス
+ * @returns {undefined}
+ */
+const nth = function(a, index) {
+  if (!_.isNumber(index)) {
+    fail('インデックスは数値である必要があります');
+    return false;
+  }
+  if (!isIndexed(a)) {
+    fail('インデックス指定可能ではないデータ型はサポートされていません');
+    return false;
+  }
+  if ((index < 0) || (index > a.length - 1)) {
+    fail('インデックスは範囲外です');
+    return false;
+  }
+  return a[index];
+};
+// パブリックメソッド/nth/終了 -------------------------------------------------
+
+// パブリックメソッド/second/開始 ----------------------------------------------
+const second = function(a) {
+  return nth(a, 1);
+};
+// パブリックメソッド/second/終了 ----------------------------------------------
 
 // パブリックメソッド/existy/開始 ----------------------------------------------
 /**
@@ -69,6 +172,42 @@ const truthy = function(x) {
 };
 // パブリックメソッド/truthy/終了 ----------------------------------------------
 
+// パブリックメソッド/doWhen/開始 ----------------------------------------------
+const doWhen = function(cond, action) {
+  if (truthy(cond)) {
+    return action();
+  }
+  else {
+    return undefined;
+  }
+};
+// パブリックメソッド/doWhen/終了 ----------------------------------------------
+
+// パブリックメソッド/invoker/開始 ---------------------------------------------
+/**
+ * invoker メソッドを引数に取り、ターゲットとなるオブジェクトでそのメソッドを
+ * 実行する関数を返す
+ *
+ * @param name
+ * @param method
+ * @returns {undefined}
+ */
+const invoker = function(name, method) {
+  return function(target /* 任意の数の引数 */) {
+    if (!existy(target)) {
+      fail('Must provide a target');
+    }
+
+    var targetMethod = target[name];
+    var args = _.drop(arguments);
+
+    return doWhen((existy(targetMethod) && method === targetMethod), function() {
+      return targetMethod.apply(target, args);
+    });
+  };
+};
+// パブリックメソッド/invoker/終了 ---------------------------------------------
+
 // パブリックメソッド/cat/開始 -------------------------------------------------
 const cat = function(/* いくつかの配列 */) {
   const head = _.first(arguments);
@@ -88,6 +227,13 @@ const construct = function(head, tail) {
 // パブリックメソッド/construct/終了 -------------------------------------------
 
 // パブリックメソッド/div/開始 -------------------------------------------------
+/**
+ * div 割り算の計算結果を返す
+ *
+ * @param n 割られる数
+ * @param d 悪数
+ * @returns {Number}
+ */
 const div = function(n, d) {
   return n / d;
 };
@@ -124,6 +270,44 @@ const repeatedly = function(times, fun) {
 };
 // パブリックメソッド/repeatedly/終了 ------------------------------------------
 
+// パブリックメソッド/deepClone/開始 -------------------------------------------
+const deepClone = function(obj) {
+  if (!existy(obj) || !_.isObject(obj)) {
+    return obj;
+  }
+
+  let temp = new obj.constructor();
+  for (let key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      temp[key] = deepClone(obj[key]);
+    }
+  }
+  return temp;
+};
+// パブリックメソッド/deepClone/終了 -------------------------------------------
+
+// パブリックメソッド/curry2/開始 ----------------------------------------------
+/**
+ * curry2 関数を引数にとり、2段階までカリー化を行う
+ *
+ * @param fun
+ * @returns {undefined}
+ */
+const curry2 = function(fun) {
+  return function(secondArg) {
+    return function(firstArg) {
+      return fun(firstArg, secondArg);
+    };
+  };
+};
+// パブリックメソッド/curry2/終了 ----------------------------------------------
+
+// パブリックメソッド/merge/開始 -----------------------------------------------
+const merge = function(/* 任意の数のオブジェクト */) {
+  return _.extend.apply(null, construct({}, arguments));
+};
+// パブリックメソッド/merge/開始 -----------------------------------------------
+
 // パブリックメソッド/isArray/開始 ---------------------------------------------
 /**
  * isArray 配列かどうかを判定する
@@ -152,6 +336,26 @@ const isNumber = function(value) {
     isFinite(value);
 };
 
+// パブリックメソッド/isEmpty/開始 ---------------------------------------------
+/**
+ * isEmpty ''が与えられるとtrueを返す。' '(空白)でもtrueを返すようにtrim()を適用
+ * している。
+ *
+ * @param s 文字列
+ * @returns {Boolean}
+ */
+const isEmpty = s => !s || !s.trim();
+// パブリックメソッド/isEmpty/終了 ---------------------------------------------
+
+// パブリックメソッド/isValid/開始 ---------------------------------------------
+/**
+ * isValid 引数valが未定義ではなく、nullでもない場合trueを返す
+ *
+ * @returns {Boolean}
+ */
+const isValid = val => !_.isUndefined(val) && !_.isNull(val);
+// パブリックメソッド/isValid/終了 ---------------------------------------------
+
 /**
  * getRandomInt 呼び出されるたびにランダムな整数を返す
  *
@@ -171,16 +375,38 @@ const initModule = function () {
   timestampLog('util initModule start');
 };
 
+// ---------- パブリックプロパティ開始 -----------------------------
+// パブリックプロパティ/rand/開始 ----------------------------------
+var rand = partial1(_.random, 1);
+// パブリックメソッド/rand/終了 -------------------------------------
+
+// ---------- パブリックプロパティ終了 -----------------------------
+
 module.exports = {
+  trim          : trim,
+  normalize     : normalize,
+  average       : average,
+  run           : run,
+  increment     : increment,
+  nth           : nth,
+  second        : second,
   existy        : existy,
   truthy        : truthy,
+  doWhen        : doWhen,
+  invoker       : invoker,
   cat           : cat,
   construct     : construct,
   div           : div,
   partial1      : partial1,
   repeatedly    : repeatedly,
+  deepClone     : deepClone,
+  curry2        : curry2,
+  rand          : rand,
+  merge         : merge,
   isArray       : isArray,
   isNumber      : isNumber,
+  isEmpty       : isEmpty,
+  isValid       : isValid,
   getRandomInt  : getRandomInt,
   timestampLog  : timestampLog,
   initModule    : initModule

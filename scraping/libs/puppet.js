@@ -961,6 +961,6 @@ module.exports = {
 
 // ---------- モジュール初期化開始   -------------------------------------------
 process.setMaxListeners(Infinity); // <== Important line
-console.log('puppet module start');
+util.timestampLog('puppet module start');
 // ---------- モジュール初期化終了   -------------------------------------------
 //

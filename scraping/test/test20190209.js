@@ -1,5 +1,7 @@
 const assert      = require('assert');
 const delay       = require('delay');
+// const _           = require('underscore');
+const _           = require('lodash');
 const puppet      = require('../libs/puppet');
 const util        = require('../libs/util');
 const filesystem  = require('../libs/filesystem');
@@ -8,6 +10,140 @@ let page;
 let child_page;
 
 describe('util', function() {
+
+  describe('normalize', function () {
+    it('関数パイプラインのテスト', function () {
+      assert.equal(util.normalize(util.trim(' 444-44-4444 ')), '444444444');
+    });
+  });
+
+  describe('names', function () {
+    it('チェーンのテスト', function () {
+      var names = [
+        'alonzo church',
+        'Haskell curry',
+        'stephen_kleene',
+        'John von Neumann',
+        'stephen_kleene'
+      ];
+      let result = _.chain(names)
+                      .filter(util.isValid)
+                      .map(s => s.replace(/_/, ' '))
+                      .uniq()
+                      .map(_.startCase)
+                      .sort()
+                      .value();
+      assert.deepEqual(result, [
+        'Alonzo Church',
+        'Haskell Curry',
+        'John Von Neumann',
+        'Stephen Kleene'
+      ]);
+    });
+  });
+
+  describe('isEmpty', function () {
+    it('空かどうかのテスト', function () {
+      assert.equal(util.isEmpty('abc'), false);
+    });
+  });
+
+  describe('isEmpty', function () {
+    it('空かどうかのテスト', function () {
+      assert.equal(util.isEmpty('  '), true);
+    });
+  });
+
+  describe('isEmpty', function () {
+    it('空かどうかのテスト', function () {
+      assert.equal(util.isEmpty(''), true);
+    });
+  });
+
+  describe('average', function () {
+    it('平均値を求めるテスト', function () {
+      var input = [80, 90, 100];
+      assert.equal(util.average(input), 90);
+    });
+  });
+
+  describe('increment', function () {
+    it('1を加えるテスト', function () {
+      var plus2 = util.run(util.increment, util.increment);
+      assert.equal(plus2(0), 2);
+    });
+  });
+
+  describe('array', function () {
+    it('命令型プログラミングのテスト', function () {
+      var array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => Math.pow(num, 2));
+      assert.deepEqual(array, [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]);
+    });
+  });
+
+  describe('array', function () {
+    it('命令型プログラミングのテスト', function () {
+      var array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map(function (num) {
+        return Math.pow(num, 2);
+      });
+      assert.deepEqual(array, [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]);
+    });
+  });
+
+  describe('array', function () {
+    it('命令型プログラミングのテスト', function () {
+      var array = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+      for (let i = 0; i < array.length; i++) {
+        array[i] = Math.pow(array[i], 2);
+      }
+      assert.deepEqual(array, [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]);
+    });
+  });
+
+  describe('nth', function () {
+    it('指定する要素を返すテスト', function () {
+      var letters = ['a', 'b', 'c'];
+      assert.equal(util.nth(letters, 1), 'b');
+    });
+  });
+
+  describe('nth', function () {
+    it('指定する要素を返すテスト', function () {
+      assert.equal(util.nth('abc', 0), 'a');
+    });
+  });
+
+  describe('nth', function () {
+    it('指定する要素を返すテスト', function () {
+      var letters = ['a', 'b', 'c'];
+      assert.equal(util.nth(letters, 4000), false);
+    });
+  });
+
+  describe('nth', function () {
+    it('指定する要素を返すテスト', function () {
+      var letters = ['a', 'b', 'c'];
+      assert.equal(util.nth(letters, 'aaaa'), false);
+    });
+  });
+
+  describe('second', function () {
+    it('2番目の要素を返すテスト', function () {
+      assert.equal(util.second(['a', 'b']), 'b');
+    });
+  });
+
+  describe('second', function () {
+    it('2番目の要素を返すテスト', function () {
+      assert.equal(util.second('fogus'), 'o');
+    });
+  });
+
+  describe('second', function () {
+    it('2番目の要素を返すテスト', function () {
+      assert.equal(util.second({}), false);
+    });
+  });
 
   describe('existy', function () {
     it('存在するかどうかのテスト', function () {
@@ -69,6 +205,13 @@ describe('util', function() {
     });
   });
 
+  describe('invoker', function () {
+    it('クロージャを返すテスト', function () {
+      var rev = util.invoker('reverse', Array.prototype.reverse);
+      assert.deepEqual(_.map([[1, 2, 3]], rev), [[3, 2, 1]]);
+    });
+  });
+
   describe('cat', function () {
     it('配列を結合するテスト', function () {
       assert.deepEqual(util.cat([1, 2, 3], [4, 5], [6, 7, 8]), [1, 2, 3, 4, 5, 6, 7, 8]);
@@ -96,6 +239,59 @@ describe('util', function() {
           return Math.floor((Math.random() * 10) + 1);
         })
       );
+    });
+  });
+
+  describe('deepClone', function () {
+    it('深いコピーのテスト', function () {
+      var x = [{a: [1, 2, 3], b: 42}, {c: {d: []}}];
+      var y = util.deepClone(x)
+      assert.equal(_.isEqual(x, y), true);
+    });
+  });
+
+  describe('deepClone', function () {
+    it('深いコピーのテスト', function () {
+      var x = [{a: [1, 2, 3], b: 42}, {c: {d: []}}];
+      var y = util.deepClone(x)
+      y[1]['c']['d'] = 42;
+      assert.equal(_.isEqual(x, y), false);
+    });
+  });
+
+  describe('curry2', function () {
+    it('2段階のカリー化のテスト', function () {
+      var div10 = util.curry2(util.div)(10);
+      assert.equal(div10(50), 5);
+    });
+  });
+
+  describe('curry2', function () {
+    it('2段階のカリー化のテスト', function () {
+      var parseBinaryString = util.curry2(parseInt)(2);
+      assert.equal(parseBinaryString('111'), 7);
+    });
+  });
+
+  describe('curry2', function () {
+    it('2段階のカリー化のテスト', function () {
+      var parseBinaryString = util.curry2(parseInt)(2);
+      assert.equal(parseBinaryString('10'), 2);
+    });
+  });
+
+  describe('curry2', function () {
+    it('2段階のカリー化のテスト', function () {
+      var freq = util.curry2(_.countBy)(_.identity);
+      var a = util.repeatedly(1000, util.partial1(util.rand, 2));
+      var copy = _.clone(a);
+    });
+  });
+
+  describe('merge', function () {
+    it('オブジェクトを結合するテスト', function () {
+      var person = {fname: 'Simon'};
+      assert.deepEqual(util.merge(person, {lname: 'Petrikov'}, {age: 28}, {age: 108}), {age:108, fname: 'Simon', lname: 'Petrikov'});
     });
   });
 
